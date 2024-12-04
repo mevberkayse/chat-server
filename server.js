@@ -10,10 +10,10 @@ app.use(cors());
 // Paths to SSL certificate and key
 // Path to your .pfx file
 const options = {
-  pfx: fs.readFileSync("./cert.pfx"),
-  passphrase: "" // Replace with your actual passphrase if the PFX file is password-protected
+  key: fs.readFileSync("private.key"),
+  cert: fs.readFileSync("certificate.crt"),
+  ca: fs.readFileSync("ca_bundle.crt")
 };
-
 // Create an HTTPS server
 const server = https.createServer(options, app);
 
