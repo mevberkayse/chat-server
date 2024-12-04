@@ -1,12 +1,23 @@
 const express = require("express");
-const http = require("http");
+const https = require("https");
 const socketIo = require("socket.io");
+const fs = require("fs");
 const cors = require("cors");
 
 const app = express();
 app.use(cors());
 
-const server = http.createServer(app);
+// Paths to SSL certificate and key
+// Path to your .pfx file
+const options = {
+  pfx: fs.readFileSync("./cert.pfx"),
+  passphrase: "" // Replace with your actual passphrase if the PFX file is password-protected
+};
+
+// Create an HTTPS server
+const server = https.createServer(options, app);
+
+// Initialize Socket.io with HTTPS
 const io = socketIo(server, {
   cors: {
     origin: "*",
@@ -27,7 +38,6 @@ io.on("connection", socket => {
   socket.on("sendMessage", data => {
     const { conversationId, message, senderId } = data;
     // Emit the message to everyone in the specific room
-
     io.to(conversationId).emit("receiveMessage", {
       conversationId: conversationId,
       message: message,
@@ -45,7 +55,7 @@ io.on("connection", socket => {
   });
 });
 
-const PORT = 3000;
+const PORT = 2087;
 server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on https://localhost:${PORT}`);
 });
